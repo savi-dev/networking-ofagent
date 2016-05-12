@@ -19,6 +19,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import traceback
+
 from oslo_log import log
 
 from neutron.agent import securitygroups_rpc
@@ -41,11 +43,12 @@ class OfagentMechanismDriver(mech_agent.SimpleAgentMechanismDriverBase):
     """
 
     def __init__(self):
+        traceback.print_stack()
         sg_enabled = securitygroups_rpc.is_firewall_enabled()
         vif_details = {portbindings.CAP_PORT_FILTER: sg_enabled,
                        portbindings.OVS_HYBRID_PLUG: sg_enabled}
         super(OfagentMechanismDriver, self).__init__(
-            constants.AGENT_TYPE_OFA,
+            constants.AGENT_TYPE_OVS,
             portbindings.VIF_TYPE_OVS,
             vif_details)
 
@@ -55,4 +58,36 @@ class OfagentMechanismDriver(mech_agent.SimpleAgentMechanismDriverBase):
                  p_constants.TYPE_VLAN])
 
     def get_mappings(self, agent):
+        #return dict(agent['configurations'].get('bridge_mappings', {}))
+        print dict(agent['configurations'].get('interface_mappings', {}))
         return dict(agent['configurations'].get('interface_mappings', {}))
+
+    def create_port_postcommit(self, context):
+        print context.__module__ + "." + context.__class__.__name__
+        print dir(context)
+        print context.current
+        print context.network.current
+        print context.host
+        print context._binding
+        print context.vif_details
+        traceback.print_stack()
+
+    def update_port_postcommit(self, context):
+        print context.__module__ + "." + context.__class__.__name__
+        print dir(context)
+        print context.current
+        print context.network.current
+        print context.host
+        print context._binding
+        print context.vif_details
+        traceback.print_stack()
+
+    def delete_port_postcommit(self, context):
+        traceback.print_stack()
+
+    def create_network_postcommit(self, context):
+        traceback.print_stack()
+
+    def delete_network_postcommit(self, context):
+        traceback.print_stack()
+
